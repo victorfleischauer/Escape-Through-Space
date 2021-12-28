@@ -2,6 +2,8 @@ push = require 'push'
 
 Class = require 'class'
 
+require 'Player'
+
 -- physical screen dimensions
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
