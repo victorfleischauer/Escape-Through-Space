@@ -2,6 +2,11 @@ push = require 'push'
 
 Class = require 'class'
 
+require 'StateMachine'
+
+require 'states/BaseState'
+require 'states/PlayState'
+
 require 'Player'
 
 -- physical screen dimensions
@@ -31,6 +36,12 @@ function love.load ()
         fullscreen = false,
         resizable = true
     })
+
+    -- initialize state machine with all state-returning functions
+    gStateMachine = StateMachine {
+        ['play'] = function() return PlayState() end
+    }
+    gStateMachine:change('play')
 
     -- initialize input table
     love.keyboard.keysPressed = {}
@@ -62,8 +73,9 @@ function love.keyboard.wasPressed(key)
 end
 
 function love.update(dt)
-
     love.keyboard.keysPressed = {}
+
+    gStateMachine:update(dt)
 end
 
 function love.draw()
@@ -71,6 +83,8 @@ function love.draw()
 
     love.graphics.draw(background, 0, 0)
     love.graphics.draw(stars, 0, 0)
+
+    gStateMachine:render()
 
     push:finish()
 end
