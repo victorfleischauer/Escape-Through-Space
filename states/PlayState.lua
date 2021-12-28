@@ -5,7 +5,7 @@ function PlayState:init()
 end
 
 function PlayState:update(dt)
-
+    self.player:update(dt)
 end
 
 function PlayState:render()
