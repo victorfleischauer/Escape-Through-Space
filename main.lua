@@ -8,6 +8,8 @@ require 'states/BaseState'
 require 'states/PlayState'
 
 require 'Player'
+require 'Enemy'
+require 'Tiro'
 
 -- physical screen dimensions
 WINDOW_WIDTH = 1280
@@ -19,6 +21,8 @@ VIRTUAL_HEIGHT = 288
 
 local background = love.graphics.newImage('imgs/space.png')
 local stars = love.graphics.newImage('imgs/stars.png')
+local starScroll = -1000 + VIRTUAL_HEIGHT
+local starSpeed = 60
 
 function love.load ()
     -- initialize our nearest-neighbor filter
@@ -73,16 +77,21 @@ function love.keyboard.wasPressed(key)
 end
 
 function love.update(dt)
-    love.keyboard.keysPressed = {}
+    starScroll = (starScroll + starSpeed * dt)
+    if starScroll >= 0 then
+        starScroll = -1000 + VIRTUAL_HEIGHT
+    end
 
     gStateMachine:update(dt)
+
+    love.keyboard.keysPressed = {}
 end
 
 function love.draw()
     push:start()
 
     love.graphics.draw(background, 0, 0)
-    love.graphics.draw(stars, 0, 0)
+    love.graphics.draw(stars, 0, starScroll)
 
     gStateMachine:render()
 

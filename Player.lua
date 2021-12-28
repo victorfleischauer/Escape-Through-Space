@@ -2,9 +2,11 @@ Player = Class{}
 
 local SPEED = 2
 local MAX_SPEED = 4
+local SHOT_COOLDOWN = 0.5
 
 function Player:init()
     self.naveBase = love.graphics.newImage('imgs/Nave.png')
+    self.naveCool = love.graphics.newImage('imgs/NaveCool.png')
 
     self.naveUp = love.graphics.newImage('imgs/NaveUp.png')
     self.naveDo = love.graphics.newImage('imgs/NaveDo.png')
@@ -25,6 +27,11 @@ function Player:init()
     self.aDO = false
     self.aLE = false
     self.aRI = false
+
+    canShoot = true
+    timer = 0
+
+    self.shots = {}
 end
 
 function Player:update(dt)
@@ -78,10 +85,57 @@ function Player:update(dt)
         self.y = VIRTUAL_HEIGHT
     end
 
+    if canShoot then
+        timer = 0
+        if love.keyboard.wasPressed('up') then
+            canShoot = false
+            table.insert(self.shots, Tiro(self.x + 6, self.y, 'Up'))
+        elseif love.keyboard.wasPressed('down') then
+            canShoot = false
+            table.insert(self.shots, Tiro(self.x + 6, self.y + 8, 'Down'))
+        elseif love.keyboard.wasPressed('left') then
+            canShoot = false
+            table.insert(self.shots, Tiro(self.x + 4, self.y + 6, 'Left'))
+        elseif love.keyboard.wasPressed('right') then
+            canShoot = false
+            table.insert(self.shots, Tiro(self.x + 8, self.y + 6, 'Right'))
+        end
+    else
+        timer = timer + dt
+        if timer >= SHOT_COOLDOWN then
+            canShoot = true
+        end
+    end
+
+    for k,shot in pairs(self.shots) do
+        shot:update(dt)
+    end
+
+    for k,shot in pairs(self.shots) do
+        if shot.remove then
+            table.remove(self.shots, k)
+        end
+    end
+end
+
+function Player:collides(enemy)
+    if (self.x + 2) + (self.width - 4) >= enemy.x and self.x + 2 <= enemy.x + ENEMY_SIDE_LENGTH then
+        if (self.y + 2) + (self.height - 4) >= enemy.y and self.y + 2 <= enemy.y + ENEMY_SIDE_LENGTH then
+            return true
+        end
+    end
 end
 
 function Player:render()
-    love.graphics.draw(self.naveBase, self.x, self.y)
+    for k,shot in pairs(self.shots) do
+        shot:render()
+    end
+
+    if canShoot then
+       love.graphics.draw(self.naveBase, self.x, self.y)
+    else
+        love.graphics.draw(self.naveCool, self.x, self.y)
+    end
     if self.aUP then
         love.graphics.draw(self.naveDo, self.x, self.y)
     end
