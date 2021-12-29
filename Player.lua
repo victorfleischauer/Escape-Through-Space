@@ -2,7 +2,7 @@ Player = Class{}
 
 local FORGIVNESS = 2
 
-local SPEED = 2
+local SPEED = 4
 local MAX_SPEED = 4
 local SHOT_COOLDOWN = 0.5
 

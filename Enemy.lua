@@ -4,17 +4,18 @@ Enemy = Class{}
 
 ENEMY_SIDE_LENGTH = 16
 
-local SPEED = 15
-
-function Enemy:init(x, y)
+function Enemy:init(x, y, speedX, speedY)
     self.x = x
     self.y = y
 
+    self.dx = speedX
+    self.dy = speedY
 end
 
 function Enemy:update(dt)
     
-    self.x = self.x + SPEED * dt
+    self.x = self.x + self.dx * dt
+    self.y = self.y + self.dy * dt
 
 end
 

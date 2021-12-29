@@ -6,6 +6,7 @@ require 'StateMachine'
 
 require 'states/BaseState'
 require 'states/PlayState'
+require 'states/StartState'
 
 require 'Player'
 require 'Enemy'
@@ -31,8 +32,15 @@ function love.load ()
     -- seed the RNG
     math.randomseed(os.time())
 
+    -- fonts
+    titleFont = love.graphics.newFont('Linebeam.ttf', 30)
+    menuFont = love.graphics.newFont('ARCADECLASSIC.TTF', 20)
+
     -- app window title
     love.window.setTitle('Escape Through Space')
+
+    -- hide mouse
+    love.mouse.setVisible(false)
 
     -- initialize our virtual resolution
     push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
@@ -43,9 +51,10 @@ function love.load ()
 
     -- initialize state machine with all state-returning functions
     gStateMachine = StateMachine {
+        ['start'] = function() return StartState() end,
         ['play'] = function() return PlayState() end
     }
-    gStateMachine:change('play')
+    gStateMachine:change('start')
 
     -- initialize input table
     love.keyboard.keysPressed = {}
