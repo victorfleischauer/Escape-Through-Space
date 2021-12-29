@@ -1,8 +1,12 @@
 Player = Class{}
 
+local FORGIVNESS = 2
+
 local SPEED = 2
 local MAX_SPEED = 4
 local SHOT_COOLDOWN = 0.5
+
+local RECOVER_TIME = 3
 
 function Player:init()
     self.naveBase = love.graphics.newImage('imgs/Nave.png')
@@ -22,14 +26,20 @@ function Player:init()
     self.dx = 0
     self.dy = 0
 
+    self.hp = 3
         
     self.aUP = false
     self.aDO = false
     self.aLE = false
     self.aRI = false
 
-    canShoot = true
-    timer = 0
+    self.canShoot = true
+    self.shotTimer = 0
+
+    self.recoverTimer = 0
+    self.recovering = false
+
+    self.blink = false
 
     self.shots = {}
 end
@@ -85,25 +95,25 @@ function Player:update(dt)
         self.y = VIRTUAL_HEIGHT
     end
 
-    if canShoot then
-        timer = 0
+    if self.canShoot then
+        self.shotTimer = 0
         if love.keyboard.wasPressed('up') then
-            canShoot = false
+            self.canShoot = false
             table.insert(self.shots, Tiro(self.x + 6, self.y, 'Up'))
         elseif love.keyboard.wasPressed('down') then
-            canShoot = false
+            self.canShoot = false
             table.insert(self.shots, Tiro(self.x + 6, self.y + 8, 'Down'))
         elseif love.keyboard.wasPressed('left') then
-            canShoot = false
+            self.canShoot = false
             table.insert(self.shots, Tiro(self.x + 4, self.y + 6, 'Left'))
         elseif love.keyboard.wasPressed('right') then
-            canShoot = false
+            self.canShoot = false
             table.insert(self.shots, Tiro(self.x + 8, self.y + 6, 'Right'))
         end
     else
-        timer = timer + dt
-        if timer >= SHOT_COOLDOWN then
-            canShoot = true
+        self.shotTimer = self.shotTimer + dt
+        if self.shotTimer >= SHOT_COOLDOWN then
+            self.canShoot = true
         end
     end
 
@@ -116,13 +126,37 @@ function Player:update(dt)
             table.remove(self.shots, k)
         end
     end
+
+    if self.recovering then
+        self.recoverTimer = self.recoverTimer + dt
+
+        if self.recoverTimer % 0.25 > 0.125 then
+            self.blink = true
+        else
+            self.blink = false
+        end
+
+        if self.recoverTimer >= RECOVER_TIME then
+            self.recovering = false
+            self.recoverTimer = 0
+            self.blink = false
+        end
+    end
 end
 
 function Player:collides(enemy)
-    if (self.x + 2) + (self.width - 4) >= enemy.x and self.x + 2 <= enemy.x + ENEMY_SIDE_LENGTH then
-        if (self.y + 2) + (self.height - 4) >= enemy.y and self.y + 2 <= enemy.y + ENEMY_SIDE_LENGTH then
+    if (self.x) + (self.width - FORGIVNESS) >= enemy.x and self.x + FORGIVNESS <= enemy.x + ENEMY_SIDE_LENGTH then
+        if (self.y) + (self.height - FORGIVNESS) >= enemy.y and self.y + FORGIVNESS <= enemy.y + ENEMY_SIDE_LENGTH then
             return true
         end
+    end
+end
+
+function Player:getHit()
+    if not self.recovering then
+        self.hp = self.hp - 1
+
+        self.recovering = true
     end
 end
 
@@ -131,22 +165,24 @@ function Player:render()
         shot:render()
     end
 
-    if canShoot then
-       love.graphics.draw(self.naveBase, self.x, self.y)
-    else
-        love.graphics.draw(self.naveCool, self.x, self.y)
-    end
-    if self.aUP then
-        love.graphics.draw(self.naveDo, self.x, self.y)
-    end
-    if self.aDO then
-        love.graphics.draw(self.naveUp, self.x, self.y)
-    end
-    if self.aRI then
-        love.graphics.draw(self.naveLe, self.x, self.y)
-    end
-    if self.aLE then
-        love.graphics.draw(self.naveRi, self.x, self.y)
+    if not self.blink then
+        if self.canShoot then
+        love.graphics.draw(self.naveBase, self.x, self.y)
+        else
+            love.graphics.draw(self.naveCool, self.x, self.y)
+        end
+        if self.aUP then
+            love.graphics.draw(self.naveDo, self.x, self.y)
+        end
+        if self.aDO then
+            love.graphics.draw(self.naveUp, self.x, self.y)
+        end
+        if self.aRI then
+            love.graphics.draw(self.naveLe, self.x, self.y)
+        end
+        if self.aLE then
+            love.graphics.draw(self.naveRi, self.x, self.y)
+        end
     end
 
 end
