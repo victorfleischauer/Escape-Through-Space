@@ -1,6 +1,6 @@
 Tiro = Class{}
 
-local SPEED = 250
+local SPEED = 1000
 local imageVertical = love.graphics.newImage('imgs/tiro.png')
 local imageHorizontal = love.graphics.newImage('imgs/tiroHorizontal.png')
 

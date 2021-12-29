@@ -3,9 +3,11 @@ PlayState = Class{__includes = BaseState}
 local shield = love.graphics.newImage('imgs/Shield.png')
 local shieldBroken = love.graphics.newImage('imgs/ShieldBroken.png')
 
-local SPAWN_TIME = 3
+local SPAWN_TIME = 2
 local MAX_ENEMIES = 10
-local ENEMY_SPEED = 400
+local ENEMY_SPEED = 200
+
+local SURVIVAL_GOAL = 30
 
 function PlayState:init()
     self.player = Player()
@@ -14,20 +16,35 @@ function PlayState:init()
     self.numberOfEnemies = 0
     
     self.spawnTimer = 0
+
+    self.survivalTimer = 0
+
+    self.score = 0
 end
 
 function PlayState:enter(params)
     self.difficulty = params.difficulty
-    self.difficulty = (self.difficulty * 0.2) + 0.6
+    self.difficulty = (self.difficulty * 0.25) + 0.5
 end
 
 function PlayState:update(dt)
+
+    self.survivalTimer = self.survivalTimer + dt
+
+    if self.survivalTimer >= SURVIVAL_GOAL then
+        self.score = self.score + 1001
+        gStateMachine:change('results', {
+            results = 'timeWin',
+            score = self.score
+        })
+    end
 
     -- check if a shot has hit an enemy
     for _, shot in pairs(self.player.shots) do
         for k, enemy in pairs(self.enemies) do
             if shot:collides(enemy) then
                 enemy.remove = true
+                self.score = self.score + 100 * self.difficulty
             end
         end
     end
@@ -57,57 +74,62 @@ function PlayState:update(dt)
     self.player:update(dt)
 
     self:spawner(dt)
+
+    if self.player.death then
+        gStateMachine:change('results', {
+            results = 'timeFail',
+            score = self.score
+        })
+    end
 end
 
 function PlayState:spawner(dt)
     self.spawnTimer = self.spawnTimer + dt
 
-    if self.spawnTimer >= SPAWN_TIME then
+    if self.spawnTimer >= (SPAWN_TIME * (2 - self.difficulty)) then
         self.spawnTimer = 0
-        if self.numberOfEnemies <= MAX_ENEMIES then
-            table.insert(self.enemies, self.spawnEnemy())
+        if self.numberOfEnemies <= (MAX_ENEMIES * self.difficulty) then
+            local xE = 0
+            local yE = 0
+            local dxE = 0
+            local dyE = 0
+
+            local extraDirectionMod = 0.8
+            side = {
+                [1] = function () 
+                    xE = - ENEMY_SIDE_LENGTH
+                    yE = math.random(0 + ENEMY_SIDE_LENGTH, VIRTUAL_HEIGHT - ENEMY_SIDE_LENGTH)
+                    dxE = ENEMY_SPEED + (math.random(-10, 10))
+                    dyE = math.random(-ENEMY_SPEED, ENEMY_SPEED) * extraDirectionMod
+                end,
+                [2] = function ()
+                    xE = VIRTUAL_WIDTH + ENEMY_SIDE_LENGTH
+                    yE = math.random(0 + ENEMY_SIDE_LENGTH, VIRTUAL_HEIGHT - ENEMY_SIDE_LENGTH)
+                    dxE = -ENEMY_SPEED + (math.random(-10, 10))
+                    dyE = math.random(-ENEMY_SPEED, ENEMY_SPEED) * extraDirectionMod
+                end,
+                [3] = function ()
+                    xE = math.random(0 + ENEMY_SIDE_LENGTH, VIRTUAL_WIDTH - ENEMY_SIDE_LENGTH)
+                    yE = - ENEMY_SIDE_LENGTH
+                    dxE = math.random(-ENEMY_SPEED, ENEMY_SPEED) * extraDirectionMod
+                    dyE = ENEMY_SPEED + (math.random(-10, 10))
+                end,
+                [4] = function ()
+                    xE = math.random(0 + ENEMY_SIDE_LENGTH, VIRTUAL_WIDTH - ENEMY_SIDE_LENGTH)
+                    yE = VIRTUAL_HEIGHT + ENEMY_SIDE_LENGTH
+                    dxE = math.random(-ENEMY_SPEED, ENEMY_SPEED) * extraDirectionMod
+                    dyE = -ENEMY_SPEED + (math.random(-10, 10))
+                end
+            }
+
+            side[math.random(4)]()
+
+            dxE = dxE * self.difficulty
+            dyE = dyE * self.difficulty
+
+            table.insert(self.enemies, Enemy(xE, yE, dxE, dyE))
         end
     end
-end
-
-function PlayState:spawnEnemy()
-    local xE = 0
-    local yE = 0
-    local dxE = 0
-    local dyE = 0
-
-    local extraDirectionMod = 0.5
-    side = {
-        [1] = function () 
-            xE = - ENEMY_SIDE_LENGTH
-            yE = math.random(0 + ENEMY_SIDE_LENGTH, VIRTUAL_HEIGHT - ENEMY_SIDE_LENGTH)
-            dxE = ENEMY_SPEED + (math.random(-10, 10))
-            dyE = math.random(-ENEMY_SPEED, ENEMY_SPEED) * extraDirectionMod
-        end,
-        [2] = function ()
-            xE = VIRTUAL_WIDTH + ENEMY_SIDE_LENGTH
-            yE = math.random(0 + ENEMY_SIDE_LENGTH, VIRTUAL_HEIGHT - ENEMY_SIDE_LENGTH)
-            dxE = -ENEMY_SPEED + (math.random(-10, 10))
-            dyE = math.random(-ENEMY_SPEED, ENEMY_SPEED) * extraDirectionMod
-        end,
-        [3] = function ()
-            xE = math.random(0 + ENEMY_SIDE_LENGTH, VIRTUAL_WIDTH - ENEMY_SIDE_LENGTH)
-            yE = - ENEMY_SIDE_LENGTH
-            dxE = math.random(-ENEMY_SPEED, ENEMY_SPEED) * extraDirectionMod
-            dyE = ENEMY_SPEED + (math.random(-10, 10))
-        end,
-        [4] = function ()
-            xE = math.random(0 + ENEMY_SIDE_LENGTH, VIRTUAL_WIDTH - ENEMY_SIDE_LENGTH)
-            yE = VIRTUAL_HEIGHT + ENEMY_SIDE_LENGTH
-            dxE = math.random(-ENEMY_SPEED, ENEMY_SPEED) * extraDirectionMod
-            dyE = -ENEMY_SPEED + (math.random(-10, 10))
-        end
-    }
-
-    side[math.random(4)]()
-
-    return Enemy(xE, yE, dxE, dyE)
-
 end
 
 function PlayState:render()
@@ -123,4 +145,10 @@ function PlayState:render()
     for i = 4, ((self.player.hp - 1) * 20) + 4, 20 do
         love.graphics.draw(shield, i, 4)
     end
+
+    love.graphics.setFont(menuFont)
+    local timerRounded = math.floor(self.survivalTimer * 10) / 10
+    love.graphics.printf(((timerRounded % 1) ~= 0 and tostring(timerRounded) or (tostring(timerRounded) .. '.0')), 0, 10, VIRTUAL_WIDTH, 'center')
+
+    love.graphics.printf(tostring(self.score), 0, 10, VIRTUAL_WIDTH - 4, 'right')
 end

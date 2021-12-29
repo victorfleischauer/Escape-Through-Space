@@ -2,7 +2,7 @@ Player = Class{}
 
 local FORGIVNESS = 2
 
-local SPEED = 4
+local SPEED = 8
 local MAX_SPEED = 4
 local SHOT_COOLDOWN = 0.5
 
@@ -38,6 +38,7 @@ function Player:init()
 
     self.recoverTimer = 0
     self.recovering = false
+    self.death = false
 
     self.blink = false
 
@@ -157,6 +158,10 @@ function Player:getHit()
         self.hp = self.hp - 1
 
         self.recovering = true
+    end
+
+    if self.hp <= 0 then
+        self.death = true
     end
 end
 

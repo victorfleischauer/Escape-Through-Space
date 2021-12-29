@@ -7,6 +7,7 @@ require 'StateMachine'
 require 'states/BaseState'
 require 'states/PlayState'
 require 'states/StartState'
+require 'states/ResultsState'
 
 require 'Player'
 require 'Enemy'
@@ -52,7 +53,8 @@ function love.load ()
     -- initialize state machine with all state-returning functions
     gStateMachine = StateMachine {
         ['start'] = function() return StartState() end,
-        ['play'] = function() return PlayState() end
+        ['play'] = function() return PlayState() end,
+        ['results'] = function() return ResultsState() end
     }
     gStateMachine:change('start')
 
