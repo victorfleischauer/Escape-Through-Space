@@ -101,15 +101,19 @@ function Player:update(dt)
         if love.keyboard.wasPressed('up') then
             self.canShoot = false
             table.insert(self.shots, Tiro(self.x + 6, self.y, 'Up'))
+            sounds['laser']:play()
         elseif love.keyboard.wasPressed('down') then
             self.canShoot = false
             table.insert(self.shots, Tiro(self.x + 6, self.y + 8, 'Down'))
+            sounds['laser']:play()
         elseif love.keyboard.wasPressed('left') then
             self.canShoot = false
             table.insert(self.shots, Tiro(self.x + 4, self.y + 6, 'Left'))
+            sounds['laser']:play()
         elseif love.keyboard.wasPressed('right') then
             self.canShoot = false
             table.insert(self.shots, Tiro(self.x + 8, self.y + 6, 'Right'))
+            sounds['laser']:play()
         end
     else
         self.shotTimer = self.shotTimer + dt
@@ -156,6 +160,8 @@ end
 function Player:getHit()
     if not self.recovering then
         self.hp = self.hp - 1
+
+        sounds['hit']:play()
 
         self.recovering = true
     end

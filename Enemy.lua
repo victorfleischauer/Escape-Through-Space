@@ -19,6 +19,7 @@ function Enemy:init(x, y, speedX, speedY)
     self.explosionTimer = 0
     self.framesLeft = 11
     self.exploding = false
+    self.hasPlayedSound = false
 
     self.x = x
     self.y = y
@@ -79,6 +80,13 @@ function Enemy:update(dt)
             self.hasBouncedEnough = true
         end
     else
+        if not self.hasPlayedSound then
+            self.hasPlayedSound = true
+
+            sounds['explosion']:stop()
+            sounds['explosion']:play()
+        end
+
         self.explosionTimer = self.explosionTimer + dt
         if self.explosionTimer > 0.03 then
             self.explosionTimer = self.explosionTimer % 0.03

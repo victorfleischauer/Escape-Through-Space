@@ -40,6 +40,26 @@ function love.load ()
     menuFont = love.graphics.newFont('ARCADECLASSIC.TTF', 20)
     timerFont = love.graphics.newFont('Open 24 Display St.ttf', 20)
 
+    -- table of sounds
+    sounds = {
+        -- https://freesound.org/people/BaDoink/sounds/573337/
+        ['play'] = love.audio.newSource('sfx/playMusic.wav', 'static'),
+        ['playEnd'] = love.audio.newSource('sfx/playMusicEnd.wav', 'static'),
+
+        -- https://freesound.org/people/EVRetro/sounds/583613/
+        ['menu'] = love.audio.newSource('sfx/menu.wav', 'static'),
+
+        ['select'] = love.audio.newSource('sfx/select.wav', 'static'),
+        ['selected'] = love.audio.newSource('sfx/selected.wav', 'static'),
+        ['win'] = love.audio.newSource('sfx/win.wav', 'static'),
+        ['fail'] = love.audio.newSource('sfx/death.wav', 'static'),
+        ['explosion'] = love.audio.newSource('sfx/explosion.wav', 'static'),
+        ['laser'] = love.audio.newSource('sfx/laserShot.wav', 'static'),
+        ['hit'] = love.audio.newSource('sfx/hit.wav', 'static')
+    }
+
+    sounds['menu']:setLooping(true)
+    
     -- app window title
     love.window.setTitle('Escape Through Space')
 

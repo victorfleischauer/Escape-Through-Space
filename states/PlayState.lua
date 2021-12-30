@@ -22,6 +22,10 @@ function PlayState:init()
     self.score = 0
     
     self.difficulty = (gDifficulty * 0.25) + 0.5
+
+    sounds['play']:stop()
+    sounds['playEnd']:stop()
+    sounds['play']:play()
 end
 
 function PlayState:update(dt)

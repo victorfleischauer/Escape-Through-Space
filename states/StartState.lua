@@ -6,7 +6,8 @@ function StartState:init()
     self.selected = 1
     self.selectedOptions = false
 
-    self.volume = 100
+    self.volume = love.audio.getVolume() * 100
+    self.hasPlayedMusic = false
 
     select = {
         [1] = function ()
@@ -31,13 +32,25 @@ function StartState:init()
     }
 end
 
+function StartState:exit()
+    sounds['menu']:stop()
+end
+
 function StartState:update(dt)
+
+    if not self.hasPlayedMusic then
+        if love.audio.getActiveSourceCount() < 1 then
+            sounds['menu']:play()
+        end
+    end
 
     -- control selected action with arrow keys
     if love.keyboard.wasPressed('up') or love.keyboard.wasPressed('w') then
+        sounds['select']:play()
         self.selected = self.selected - 1
     end
     if love.keyboard.wasPressed('down') or love.keyboard.wasPressed('s') then
+        sounds['select']:play()
         self.selected = self.selected + 1
     end
 
@@ -71,6 +84,7 @@ function StartState:update(dt)
     end
 
     if love.keyboard.wasPressed('return') then
+        sounds['selected']:play()
         select[self.selected]()
     end
 end

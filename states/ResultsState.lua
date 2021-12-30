@@ -3,10 +3,19 @@ ResultsState = Class{__includes = BaseState}
 function ResultsState:enter(params)
     self.results = params.results
     self.score = params.score
+
+    if self.results == 'timeWin' then
+        sounds['win']:play()
+    elseif self.results == 'timeFail' then
+        sounds['fail']:play()
+        sounds['play']:stop()
+        sounds['playEnd']:play()
+    end
 end
 
 function ResultsState:update(dt)
     if love.keyboard.wasPressed('return') then
+        sounds['selected']:play()
         gStateMachine:change('start')
     end
 end
