@@ -49,7 +49,7 @@ function PlayState:update(dt)
     for _, shot in pairs(self.player.shots) do
         for k, enemy in pairs(self.enemies) do
             if shot:collides(enemy) then
-                enemy.remove = true
+                enemy.exploding = true
                 self.score = self.score + 100 * self.difficulty
             end
         end
@@ -57,7 +57,7 @@ function PlayState:update(dt)
 
     -- check if an enemy has hit the player
     for k, enemy in pairs(self.enemies) do
-        if self.player:collides(enemy) then
+        if self.player:collides(enemy) and not (enemy.framesLeft < 7) then
             self.player:getHit()
         end
     end
