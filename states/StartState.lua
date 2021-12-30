@@ -6,7 +6,7 @@ function StartState:init()
     self.selected = 1
     self.selectedOptions = false
 
-    self.volume = love.audio.getVolume() * 100
+    self.volume = math.floor(love.audio.getVolume() * 100)
     self.hasPlayedMusic = false
 
     select = {
