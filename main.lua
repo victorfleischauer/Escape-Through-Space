@@ -36,6 +36,7 @@ function love.load ()
     -- fonts
     titleFont = love.graphics.newFont('Linebeam.ttf', 30)
     menuFont = love.graphics.newFont('ARCADECLASSIC.TTF', 20)
+    timerFont = love.graphics.newFont('Open 24 Display St.ttf', 20)
 
     -- app window title
     love.window.setTitle('Escape Through Space')

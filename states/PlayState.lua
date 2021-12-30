@@ -32,7 +32,13 @@ function PlayState:update(dt)
     self.survivalTimer = self.survivalTimer + dt
 
     if self.survivalTimer >= SURVIVAL_GOAL then
-        self.score = self.score + 1001
+        if self.score == 0 then
+            self.score = (self.difficulty <= 0.76 and 1000 or (self.difficulty >= 1.24 and 100000 or 10000))
+        else
+            self.score = self.score + 1000
+        end
+        self.score = self.score + 1
+
         gStateMachine:change('results', {
             results = 'timeWin',
             score = self.score
@@ -138,17 +144,17 @@ function PlayState:render()
         enemy:render()
     end
 
-    love.graphics.draw(shieldBroken, 4, 4)
-    love.graphics.draw(shieldBroken, 24, 4)
-    love.graphics.draw(shieldBroken, 44, 4)
+    love.graphics.draw(shieldBroken, 4, 8)
+    love.graphics.draw(shieldBroken, 24, 8)
+    love.graphics.draw(shieldBroken, 44, 8)
 
     for i = 4, ((self.player.hp - 1) * 20) + 4, 20 do
-        love.graphics.draw(shield, i, 4)
+        love.graphics.draw(shield, i, 8)
     end
 
-    love.graphics.setFont(menuFont)
+    love.graphics.setFont(timerFont)
     local timerRounded = math.floor(self.survivalTimer * 10) / 10
-    love.graphics.printf(((timerRounded % 1) ~= 0 and tostring(timerRounded) or (tostring(timerRounded) .. '.0')), 0, 10, VIRTUAL_WIDTH, 'center')
+    love.graphics.printf(((timerRounded % 1) ~= 0 and tostring(timerRounded) or (tostring(timerRounded) .. '.0')), 0, 4, VIRTUAL_WIDTH, 'center')
 
-    love.graphics.printf(tostring(self.score), 0, 10, VIRTUAL_WIDTH - 4, 'right')
+    love.graphics.printf(tostring(self.score), 0, 4, VIRTUAL_WIDTH - 4, 'right')
 end

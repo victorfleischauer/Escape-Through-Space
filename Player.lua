@@ -4,7 +4,7 @@ local FORGIVNESS = 2
 
 local SPEED = 8
 local MAX_SPEED = 4
-local SHOT_COOLDOWN = 0.5
+local SHOT_COOLDOWN = 0.25
 
 local RECOVER_TIME = 3
 

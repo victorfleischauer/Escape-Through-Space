@@ -5,6 +5,9 @@ Enemy = Class{}
 ENEMY_SIDE_LENGTH = 32
 
 function Enemy:init(x, y, speedX, speedY)
+    self.imageEnemy = love.graphics.newImage('imgs/enemy.png')
+    self.flare = love.graphics.newImage('imgs/flare.png')
+
     self.x = x
     self.y = y
 
@@ -72,5 +75,12 @@ function Enemy:update(dt)
 end
 
 function Enemy:render()
-    love.graphics.rectangle('fill', self.x, self.y, ENEMY_SIDE_LENGTH, ENEMY_SIDE_LENGTH)
+    love.graphics.draw(self.imageEnemy, self.x, self.y)
+
+    if self.hasBouncedEnough then
+        love.graphics.draw(self.flare, self.x - 5, self.y - 5)
+        love.graphics.draw(self.flare, self.x - 5 + ENEMY_SIDE_LENGTH, self.y - 5)
+        love.graphics.draw(self.flare, self.x - 5, self.y - 5 + ENEMY_SIDE_LENGTH)
+        love.graphics.draw(self.flare, self.x - 5 + ENEMY_SIDE_LENGTH, self.y - 5 + ENEMY_SIDE_LENGTH)
+    end
 end
