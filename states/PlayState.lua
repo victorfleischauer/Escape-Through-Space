@@ -20,11 +20,8 @@ function PlayState:init()
     self.survivalTimer = 0
 
     self.score = 0
-end
-
-function PlayState:enter(params)
-    self.difficulty = params.difficulty
-    self.difficulty = (self.difficulty * 0.25) + 0.5
+    
+    self.difficulty = (gDifficulty * 0.25) + 0.5
 end
 
 function PlayState:update(dt)

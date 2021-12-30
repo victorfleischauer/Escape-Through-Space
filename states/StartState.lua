@@ -6,15 +6,12 @@ function StartState:init()
     self.selected = 1
     self.selectedOptions = false
 
-    self.difficulty = 2
     self.volume = 100
 
     select = {
         [1] = function ()
             if not self.selectedOptions then
-                gStateMachine:change('play', {
-                    difficulty = self.difficulty
-                })
+                gStateMachine:change('play')
             end
         end,
         
@@ -49,12 +46,12 @@ function StartState:update(dt)
     if self.selectedOptions then
         if self.selected == 1 then
             if love.keyboard.wasPressed('left') or love.keyboard.wasPressed('a') then
-                if not (self.difficulty <= 1) then
-                    self.difficulty = self.difficulty - 1
+                if not (gDifficulty <= 1) then
+                    gDifficulty = gDifficulty - 1
                 end
             elseif love.keyboard.wasPressed('right') or love.keyboard.wasPressed('d') then
-                if not (self.difficulty >= 3) then
-                    self.difficulty = self.difficulty + 1
+                if not (gDifficulty >= 3) then
+                    gDifficulty = gDifficulty + 1
                 end
             end
 
@@ -90,7 +87,7 @@ function StartState:render()
     if self.selectedOptions then
         if self.selected == 1 then
             love.graphics.setColor(1, 1, 0, 1)
-            love.graphics.printf((self.difficulty == 1 and 'Easy' or (self.difficulty == 2 and 'Medium' or 'Hard')), 0, positionOfMenu, VIRTUAL_WIDTH, 'center')
+            love.graphics.printf((gDifficulty == 1 and 'Easy' or (gDifficulty == 2 and 'Medium' or 'Hard')), 0, positionOfMenu, VIRTUAL_WIDTH, 'center')
 
         elseif self.selected == 2 then
             love.graphics.setColor(1, 1, 0, 1)

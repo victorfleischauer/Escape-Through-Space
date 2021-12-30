@@ -21,9 +21,12 @@ WINDOW_HEIGHT = 720
 VIRTUAL_WIDTH = 324
 VIRTUAL_HEIGHT = 288
 
+-- stars used in the background and its parameters
 local stars = love.graphics.newImage('imgs/stars.png')
 local starScroll = -1000 + VIRTUAL_HEIGHT
 local starSpeed = 60
+
+gDifficulty = 2
 
 function love.load ()
     -- initialize our nearest-neighbor filter
@@ -88,6 +91,7 @@ function love.keyboard.wasPressed(key)
 end
 
 function love.update(dt)
+    -- background scroll
     starScroll = (starScroll + starSpeed * dt)
     if starScroll >= 0 then
         starScroll = -1000 + VIRTUAL_HEIGHT
