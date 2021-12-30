@@ -21,7 +21,6 @@ WINDOW_HEIGHT = 720
 VIRTUAL_WIDTH = 324
 VIRTUAL_HEIGHT = 288
 
-local background = love.graphics.newImage('imgs/space.png')
 local stars = love.graphics.newImage('imgs/stars.png')
 local starScroll = -1000 + VIRTUAL_HEIGHT
 local starSpeed = 60
@@ -102,7 +101,7 @@ end
 function love.draw()
     push:start()
 
-    love.graphics.draw(background, 0, 0)
+    love.graphics.clear(19 / 255, 19 / 255, 61 / 255, 1)
     love.graphics.draw(stars, 0, starScroll)
 
     gStateMachine:render()
