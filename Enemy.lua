@@ -1,13 +1,14 @@
 Enemy = Class{}
 
--- local love.graphics.newImage('imgs/Enemy.png')
 
 ENEMY_SIDE_LENGTH = 32
 
 function Enemy:init(x, y, speedX, speedY)
+    
     self.imageEnemy = love.graphics.newImage('imgs/enemy.png')
     self.flare = love.graphics.newImage('imgs/flare.png')
 
+    -- images used for explosion animation
     self.explosion1 = love.graphics.newImage('imgs/Explosion/Explosion1.png')
     self.explosion2 = love.graphics.newImage('imgs/Explosion/Explosion2.png')
     self.explosion3 = love.graphics.newImage('imgs/Explosion/Explosion3.png')
@@ -16,8 +17,11 @@ function Enemy:init(x, y, speedX, speedY)
     self.explosion6 = love.graphics.newImage('imgs/Explosion/Explosion6.png')
     self.explosion7 = love.graphics.newImage('imgs/Explosion/Explosion7.png')
 
+
     self.explosionTimer = 0
+    -- frames left in the explosion animation
     self.framesLeft = 11
+    -- is exploding?
     self.exploding = false
     self.hasPlayedSound = false
 
@@ -27,6 +31,7 @@ function Enemy:init(x, y, speedX, speedY)
     self.dx = speedX
     self.dy = speedY
 
+    -- number of bounces before enemy leaves screen
     self.numberOfBounces = 4
     self.hasEnteredFrame = false
     self.hasBouncedEnough = false
@@ -38,11 +43,13 @@ function Enemy:update(dt)
 
     if not self.exploding then
         if not self.hasEnteredFrame then
+            -- check if it has entered the screen completly
             if self.x > 0 and self.y > 0 and
             self.x < VIRTUAL_WIDTH - ENEMY_SIDE_LENGTH and
             self.y < VIRTUAL_HEIGHT - ENEMY_SIDE_LENGTH then 
                 self.hasEnteredFrame = true
             else
+                -- bounce on a margin outside of the screen until it fully enters the screen
                 if self.x < -ENEMY_SIDE_LENGTH then
                     self.x = -ENEMY_SIDE_LENGTH
                     self.dx = -self.dx
@@ -58,6 +65,7 @@ function Enemy:update(dt)
                 end
             end
         elseif not self.hasBouncedEnough then
+            -- bounce off the walls
             if self.x < 0 then
                 self.x = 0
                 self.dx = -self.dx
@@ -79,7 +87,10 @@ function Enemy:update(dt)
         if self.numberOfBounces <= 0 then
             self.hasBouncedEnough = true
         end
+
+    -- if is exploding
     else
+        -- play sound
         if not self.hasPlayedSound then
             self.hasPlayedSound = true
 
@@ -87,16 +98,20 @@ function Enemy:update(dt)
             sounds['explosion']:play()
         end
 
+        -- update timer and frame counter
         self.explosionTimer = self.explosionTimer + dt
         if self.explosionTimer > 0.03 then
             self.explosionTimer = self.explosionTimer % 0.03
             self.framesLeft = self.framesLeft - 1
         end
+
+        -- if animation has ended, remove itself
         if self.framesLeft <= 0 then
             self.remove = true
         end
     end
 
+    -- if out of screen by a margin, remove itself
     if self.x < -ENEMY_SIDE_LENGTH * 2 or self.y < -ENEMY_SIDE_LENGTH * 2 or
         self.x > VIRTUAL_WIDTH + ENEMY_SIDE_LENGTH * 2 or
         self.y > VIRTUAL_HEIGHT + ENEMY_SIDE_LENGTH * 2 then
@@ -105,10 +120,12 @@ function Enemy:update(dt)
 end
 
 function Enemy:render()
+    -- if the enemy has not exploded, draws itself
     if self.framesLeft > 4 then
         love.graphics.draw(self.imageEnemy, self.x, self.y)
     end
 
+    -- if the enemy is going to leave the screen, draw red lights
     if self.hasBouncedEnough and not self.exploding then
         love.graphics.draw(self.flare, self.x - 5, self.y - 5)
         love.graphics.draw(self.flare, self.x - 5 + ENEMY_SIDE_LENGTH, self.y - 5)
@@ -116,6 +133,7 @@ function Enemy:render()
         love.graphics.draw(self.flare, self.x - 5 + ENEMY_SIDE_LENGTH, self.y - 5 + ENEMY_SIDE_LENGTH)
     end
 
+    -- what image should be displayed each frame
     local frames = {
         [10] = self.explosion1,
         [9] = self.explosion2,

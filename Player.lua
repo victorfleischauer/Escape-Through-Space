@@ -1,5 +1,6 @@
 Player = Class{}
 
+-- how much should the collision detection forgive
 local FORGIVNESS = 2
 
 local SPEED = 8
@@ -20,6 +21,7 @@ function Player:init()
     self.width = self.naveBase:getWidth()
     self.height = self.naveBase:getHeight()
 
+    -- position itself in the center
     self.x = VIRTUAL_WIDTH / 2 - self.width / 2
     self.y = VIRTUAL_HEIGHT / 2 - self.height / 2
 
@@ -27,7 +29,8 @@ function Player:init()
     self.dy = 0
 
     self.hp = 3
-        
+
+    -- is accelerating (direction)?
     self.aUP = false
     self.aDO = false
     self.aLE = false
@@ -38,14 +41,19 @@ function Player:init()
 
     self.recoverTimer = 0
     self.recovering = false
+
+    -- died?
     self.death = false
 
+    -- if should be invisible, used to create the effect of blinking, while recovering
     self.blink = false
 
+    -- table of Tiro(shot) entities
     self.shots = {}
 end
 
 function Player:update(dt)
+    -- is accelerating (direction)?
     self.aUP = false
     self.aDO = false
     self.aLE = false
@@ -96,29 +104,36 @@ function Player:update(dt)
         self.y = VIRTUAL_HEIGHT
     end
 
+    -- if can shoot, shoot, else update cooldown logic
     if self.canShoot then
-        self.shotTimer = 0
+
         if love.keyboard.wasPressed('up') then
             self.canShoot = false
             table.insert(self.shots, Tiro(self.x + 6, self.y, 'Up'))
             sounds['laser']:play()
+
         elseif love.keyboard.wasPressed('down') then
             self.canShoot = false
             table.insert(self.shots, Tiro(self.x + 6, self.y + 8, 'Down'))
             sounds['laser']:play()
+
         elseif love.keyboard.wasPressed('left') then
             self.canShoot = false
             table.insert(self.shots, Tiro(self.x + 4, self.y + 6, 'Left'))
             sounds['laser']:play()
+
         elseif love.keyboard.wasPressed('right') then
             self.canShoot = false
             table.insert(self.shots, Tiro(self.x + 8, self.y + 6, 'Right'))
             sounds['laser']:play()
+
         end
+
     else
         self.shotTimer = self.shotTimer + dt
         if self.shotTimer >= SHOT_COOLDOWN then
             self.canShoot = true
+            self.shotTimer = 0
         end
     end
 
@@ -135,12 +150,14 @@ function Player:update(dt)
     if self.recovering then
         self.recoverTimer = self.recoverTimer + dt
 
+        -- blink every 125 miliseconds 
         if self.recoverTimer % 0.25 > 0.125 then
             self.blink = true
         else
             self.blink = false
         end
 
+        -- if has recovered
         if self.recoverTimer >= RECOVER_TIME then
             self.recovering = false
             self.recoverTimer = 0
@@ -172,16 +189,23 @@ function Player:getHit()
 end
 
 function Player:render()
+    -- render shots
     for k,shot in pairs(self.shots) do
         shot:render()
     end
 
     if not self.blink then
+
+        -- if can shoot draw normal, else draw cooling
         if self.canShoot then
-        love.graphics.draw(self.naveBase, self.x, self.y)
+            love.graphics.draw(self.naveBase, self.x, self.y)
+
         else
             love.graphics.draw(self.naveCool, self.x, self.y)
+
         end
+
+        -- draw booster acceleration
         if self.aUP then
             love.graphics.draw(self.naveDo, self.x, self.y)
         end

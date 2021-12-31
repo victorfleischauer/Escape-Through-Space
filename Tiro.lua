@@ -34,12 +34,12 @@ function Tiro:update(dt)
 
     case[self.direction]()
 
+    -- check if is fully out of the screen
     if self.x > VIRTUAL_WIDTH then
         self.remove = true
     elseif self.x < -self.width then
         self.remove = true
-    end
-    if self.y > VIRTUAL_HEIGHT then
+    elseif self.y > VIRTUAL_HEIGHT then
         self.remove = true
     elseif self.y < -self.height then
         self.remove = true

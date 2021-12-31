@@ -1,5 +1,6 @@
 ResultsState = Class{__includes = BaseState}
 
+-- simple state that displays results
 function ResultsState:enter(params)
     self.results = params.results
     self.score = params.score

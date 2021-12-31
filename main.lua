@@ -36,8 +36,11 @@ function love.load ()
     math.randomseed(os.time())
 
     -- fonts
+    -- https://www.dafont.com/linear-beam.font
     titleFont = love.graphics.newFont('Linebeam.ttf', 30)
+    -- https://www.dafont.com/pt/arcade-classic-2.font
     menuFont = love.graphics.newFont('ARCADECLASSIC.TTF', 20)
+    -- https://www.dafont.com/pt/open-24-display-st.font
     timerFont = love.graphics.newFont('Open 24 Display St.ttf', 20)
 
     -- table of sounds
