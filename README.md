@@ -8,7 +8,7 @@ The player can move in four directions using the W, A, S, D keys, and shoot in f
 
 The goal is to survive for 30 seconds, but the player can still score points even when they die. You score points by destroying enemy ships, by surviving the 30 second timer, or by surviving without destroying a single enemy. Scores change based on the difficulty selected.
 
-The game has three main states, the main menu, the play state and the results state. I thought about adding a pause feature to the play state, but I decided it was not necessary since it only lasts for 30 seconds at maximum.
+The game has three main states, the main menu, the play state and the results state. For the play state, I chose a song that builds up in intensity as the timer approaches the 30 second mark, so that the player feels greater excitement.
 
 ## What each file does
 push.lua and class.lua are both free pieces of code made by other great developers.
