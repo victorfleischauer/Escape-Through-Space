@@ -59,3 +59,6 @@ Links to the fonts used:
 [ARCADECLASSIC.TTF](https://www.dafont.com/pt/arcade-classic-2.font)
 
 [Open 24 Display St.ttf](https://www.dafont.com/pt/open-24-display-st.font)
+
+- ### exeFile.zip
+Contains the game in a .exe format, for easy sharing.
